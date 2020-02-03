@@ -41,6 +41,7 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
         for img in imgs:
             yield self.extract_feat(img)
 
+    # 抽象方法表示基类的一个方法，没有实现，所以基类不能实例化，子类实现了该抽象方法才能被实例化。
     @abstractmethod
     def forward_train(self, imgs, img_metas, **kwargs):
         """

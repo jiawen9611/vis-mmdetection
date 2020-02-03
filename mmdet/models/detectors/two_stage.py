@@ -132,6 +132,9 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
                       img_meta,
                       gt_bboxes,
                       gt_labels,
+                      ref_img,  # images of reference frame
+                      ref_bboxes,  # gt bbox of reference frame
+                      gt_pids,  # gt ids of current frame bbox mapped to reference frame
                       gt_bboxes_ignore=None,
                       gt_masks=None,
                       proposals=None):
