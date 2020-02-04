@@ -12,6 +12,7 @@ from .utils import to_tensor, random_scale
 
 from .registry import DATASETS
 
+# todo
 @DATASETS.register_module
 class YTVOSDataset(CustomDataset):
     CLASSES = ('person', 'giant_panda', 'lizard', 'parrot', 'skateboard', 'sedan',

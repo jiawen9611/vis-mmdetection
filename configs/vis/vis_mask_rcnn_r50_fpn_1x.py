@@ -142,7 +142,7 @@ img_norm_cfg = dict(
 #         ])
 # ]
 data = dict(
-    imgs_per_gpu=2,
+    imgs_per_gpu=4,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
@@ -211,7 +211,7 @@ log_config = dict(
 total_epochs = 12
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/vis_mask_rcnn_r50_fpn_1x.py'
+work_dir = './work_dirs/vis_mask_rcnn_r50_fpn_1x'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]

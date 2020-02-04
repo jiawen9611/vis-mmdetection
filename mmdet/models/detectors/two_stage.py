@@ -127,6 +127,7 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
             outs = outs + (mask_pred, )
         return outs
 
+    # todo: 这里有所改动
     def forward_train(self,
                       img,
                       img_meta,

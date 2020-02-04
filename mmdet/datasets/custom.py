@@ -10,7 +10,7 @@ from .transforms import (ImageTransform, BboxTransform, MaskTransform,
 from .utils import to_tensor, random_scale
 from .extra_aug import ExtraAugmentation
 
-
+# 使用了作者的custom
 class CustomDataset(Dataset):
     """Custom dataset for detection.
 

@@ -139,7 +139,8 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
         else:
             return self.forward_test(img, img_meta, **kwargs)
 
-    def show_result(self, data, result, dataset=None, score_thr=0.3):
+    # todo:xiugai1
+    def show_result(self, data, result, img_norm_cfg, dataset=None, score_thr=0.3):
         if isinstance(result, tuple):
             bbox_result, segm_result = result
         else:
@@ -147,7 +148,8 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
 
         img_tensor = data['img'][0]
         img_metas = data['img_meta'][0].data[0]
-        imgs = tensor2imgs(img_tensor, **img_metas[0]['img_norm_cfg'])
+        # imgs = tensor2imgs(img_tensor, **img_metas[0]['img_norm_cfg'])
+        imgs = tensor2imgs(img_tensor, **img_norm_cfg)
         assert len(imgs) == len(img_metas)
 
         if dataset is None:

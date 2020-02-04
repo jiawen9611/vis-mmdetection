@@ -27,7 +27,10 @@ def single_gpu_test(model, data_loader, show=False):
         results.append(result)
 
         if show:
-            model.module.show_result(data, result)
+            # todo:在这里加img_norm_cfg参数
+            # 改1完2后将对coco数据集不再适用
+            # model.module.show_result(data, result)
+            model.module.show_result(data, result, dataset.img_norm_cfg, dataset=dataset.CLASSES)
 
         batch_size = data['img'][0].size(0)
         for _ in range(batch_size):
