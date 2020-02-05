@@ -6,6 +6,11 @@ from ..registry import DETECTORS
 from .base import BaseDetector
 
 
+# 实现了一个通用的基础单Stage目标检测模型
+# SingleStageDetector通过继承基础类BaseDetector来实现单Stage的目标检测模型
+
+
+
 @DETECTORS.register_module
 class SingleStageDetector(BaseDetector):
     """Base class for single-stage detectors.
@@ -14,6 +19,7 @@ class SingleStageDetector(BaseDetector):
     output features of the backbone+neck.
     """
 
+    # 定义模型的数据结构和数据初始化
     def __init__(self,
                  backbone,
                  neck=None,
@@ -76,6 +82,10 @@ class SingleStageDetector(BaseDetector):
         outs = self.bbox_head(x)
         bbox_inputs = outs + (img_meta, self.test_cfg, rescale)
         bbox_list = self.bbox_head.get_bboxes(*bbox_inputs)
+        # bbox_results是通过Python的列表推导式，
+        # 遍历数据并调用bbox2result函数，根据该函数的返回值填充出的
+        # bbox_results中包含det_bboxes,det_labels
+        # bbox2result函数在mmdet\core\bbox\transforms.py中实现
         bbox_results = [
             bbox2result(det_bboxes, det_labels, self.bbox_head.num_classes)
             for det_bboxes, det_labels in bbox_list

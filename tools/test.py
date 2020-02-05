@@ -17,11 +17,14 @@ from mmdet.models import build_detector
 
 
 def single_gpu_test(model, data_loader, show=False):
+    # 通过torch.nn.Module.eval方法，将该模型设置进入评价模式
     model.eval()
     results = []
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))
+    # 通过遍历数据加载器data_loader读取数据
     for i, data in enumerate(data_loader):
+        # 取消梯度计算，输入数据运行模型，并取得模型输出
         with torch.no_grad():
             result = model(return_loss=False, rescale=not show, **data)
         results.append(result)
@@ -231,6 +234,7 @@ def main():
     fp16_cfg = cfg.get('fp16', None)
     if fp16_cfg is not None:
         wrap_fp16_model(model)
+    # 通过mmcv.runner.load_checkpoint方法，读取模型训练取得的checkpoint以配置模型中的参数
     checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
     # old versions did not save class info in checkpoints, this walkaround is
     # for backward compatibility
@@ -240,7 +244,9 @@ def main():
         model.CLASSES = dataset.CLASSES
 
     if not distributed:
+        # 通过mmcv.parallel.MMDataParallel方法，在设备上构建非分布式计算的模型
         model = MMDataParallel(model, device_ids=[0])
+        # 模型的测试输出
         outputs = single_gpu_test(model, data_loader, args.show)
     else:
         model = MMDistributedDataParallel(model.cuda())
@@ -256,6 +262,8 @@ def main():
             print('Starting evaluate {}'.format(' and '.join(eval_types)))
             if eval_types == ['proposal_fast']:
                 result_file = args.out
+                # 指标评估在底层实现上是在mmdet.core.evaluation.coco_utils.py中
+                # oco_eval方法通过调用微软的COCO API中的pycocotools包实现的
                 coco_eval(result_file, eval_types, dataset.coco)
             else:
                 if not isinstance(outputs[0], dict):

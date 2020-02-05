@@ -7,6 +7,11 @@ from ..registry import DETECTORS
 from .base import BaseDetector
 from .test_mixins import BBoxTestMixin, MaskTestMixin, RPNTestMixin
 
+# vis-这个文件也被改动了
+# 实现了一个通用的基础双Stage目标检测模型
+# 相较于单Stage模型, 增加了实例分割（instance segmentation）的功能
+# TwoStageDetector通过继承基础类BaseDetector以及RPN等类来实现双Stage的目标检测模型
+
 
 @DETECTORS.register_module
 class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
@@ -296,6 +301,7 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
                 mask_test_cfg=self.test_cfg.get('mask'))
             return bbox_results, segm_results
 
+    # 输出为模型预测的边界框结果bbox_results和segm_results
     def simple_test(self, img, img_meta, proposals=None, rescale=False):
         """Test without augmentation."""
         assert self.with_bbox, "Bbox head must be implemented."

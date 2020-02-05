@@ -4,6 +4,11 @@ from pycocotools.coco import COCO
 from .custom import CustomDataset
 from .registry import DATASETS
 
+# 实现CocoDataset类，并实现了一系列对COCO数据集读取解析的类成员方法
+# 负责将外部的COCO数据集读取解析并转换为mmdetection框架实际处理使用的数据结构
+# 继承CustomDataset基础类并重载实现 load_annotations(self, ann_file)
+# 和get_ann_info(self, idx)
+# 上面两个函数是对外调用的接口
 
 @DATASETS.register_module
 class CocoDataset(CustomDataset):
@@ -23,6 +28,7 @@ class CocoDataset(CustomDataset):
                'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock',
                'vase', 'scissors', 'teddy_bear', 'hair_drier', 'toothbrush')
 
+    # 加载标注文件到内存中
     def load_annotations(self, ann_file):
         self.coco = COCO(ann_file)
         self.cat_ids = self.coco.getCatIds()
@@ -38,6 +44,7 @@ class CocoDataset(CustomDataset):
             img_infos.append(info)
         return img_infos
 
+    # 用于提取指定image idx的某个image的标注信息
     def get_ann_info(self, idx):
         img_id = self.img_infos[idx]['id']
         ann_ids = self.coco.getAnnIds(imgIds=[img_id])
@@ -55,6 +62,7 @@ class CocoDataset(CustomDataset):
                 valid_inds.append(i)
         return valid_inds
 
+    # 封装了解析单个图片标注信息的流程
     def _parse_ann_info(self, img_info, ann_info):
         """Parse bbox and mask annotation.
 
@@ -72,6 +80,8 @@ class CocoDataset(CustomDataset):
         gt_bboxes_ignore = []
         gt_masks_ann = []
 
+        # 这四个坐标值依次写入bbox结构供mmdetection框架处理
+        # mmdetection中的bbox数据结构是通过候选框的左上角坐标和右下角坐标来标记候选框的
         for i, ann in enumerate(ann_info):
             if ann.get('ignore', False):
                 continue

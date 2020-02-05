@@ -15,6 +15,7 @@ from mmdet.datasets import DATASETS, build_dataloader
 from mmdet.models import RPN
 from mmdet.utils import get_root_logger
 
+# tools/train.py有调用此处相关实现
 
 def set_random_seed(seed, deterministic=False):
     """Set random seed.
@@ -83,7 +84,7 @@ def batch_processor(model, data, train_mode):
 
     return outputs
 
-
+# train_detector通过是否分布式训练作为分支判断
 def train_detector(model,
                    dataset,
                    cfg,

@@ -219,6 +219,7 @@ log_config = dict(
 # evaluation = dict(interval=1)
 # runtime settings
 total_epochs = 12
+# 标准的12次epoch
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/vis_mask_rcnn_r50_fpn_1x'

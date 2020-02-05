@@ -9,6 +9,9 @@ from terminaltables import AsciiTable
 from .recall import eval_recalls
 
 
+# 通过构造COCOeval对象，配置参数，
+# 并依次调用pycocotools中的 evaluate、accumulate、summarize
+# 方法实现对数据集的测试评价
 def coco_eval(result_files,
               result_types,
               coco,
