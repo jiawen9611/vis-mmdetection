@@ -57,6 +57,8 @@ model = dict(
         num_classes=41,
         loss_mask=dict(
             type='CrossEntropyLoss', use_mask=True, loss_weight=1.0)))
+# 上述的模型部分可以保持不动，使用新版的结构
+
 # model training and testing settings
 train_cfg = dict(
     rpn=dict(
@@ -111,11 +113,14 @@ test_cfg = dict(
         nms=dict(type='nms', iou_thr=0.5),
         max_per_img=100,
         mask_thr_binary=0.5))
+# 训练测试结构，流程参数也保持不变，使用新版
+
 # dataset settings
 dataset_type = 'YTVOSDataset'
 data_root = 'data/youtubevos/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+# 新版里增加pipline做预处理操作
 # train_pipeline = [
 #     dict(type='LoadImageFromFile'),
 #     dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
@@ -144,6 +149,9 @@ img_norm_cfg = dict(
 data = dict(
     imgs_per_gpu=4,
     workers_per_gpu=2,
+    # dict中的内容就是数据接口的传递参数
+    # 所以，可以改成适应原来数据接口的方式，但要保证数据接口输出
+    # 一致
     train=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/instances_train_sub.json',
@@ -199,9 +207,11 @@ lr_config = dict(
 checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
+    # 多少个batch在控制台打印信息
     interval=50,
     hooks=[
         dict(type='TextLoggerHook'),
+        # todo: 是否tb查看
         # dict(type='TensorboardLoggerHook')
     ])
 # yapf:enable
@@ -212,6 +222,7 @@ total_epochs = 12
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/vis_mask_rcnn_r50_fpn_1x'
+# 理论上load_from应该不用
 load_from = None
 resume_from = None
 workflow = [('train', 1)]

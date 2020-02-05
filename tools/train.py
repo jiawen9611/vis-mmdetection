@@ -57,6 +57,7 @@ def parse_args():
 def main():
     args = parse_args()
 
+    # 读取config文件，建立mmcv.Config对象以便后续解析
     cfg = Config.fromfile(args.config)
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
@@ -97,9 +98,12 @@ def main():
             args.seed, args.deterministic))
         set_random_seed(args.seed, deterministic=args.deterministic)
 
+    # 调用mmdet.models.build_detector方法，输入配置信息，以建立模型
     model = build_detector(
         cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
 
+    # 调用mmdet.datasets.build_dataset，根据配置文件中写的训练集信息，
+    # 建立训练集的数据集对象
     datasets = [build_dataset(cfg.data.train)]
     if len(cfg.workflow) == 2:
         datasets.append(build_dataset(cfg.data.val))
@@ -112,6 +116,9 @@ def main():
             CLASSES=datasets[0].CLASSES)
     # add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
+    # 调用mmdet.apis.train_detector方法，输入已经构建好的模型model、
+    # 训练集train_dataset、配置config对象以及其它参数，
+    # 在训练集上训练该模型
     train_detector(
         model,
         datasets,
