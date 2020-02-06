@@ -64,11 +64,16 @@ class SingleStageDetector(BaseDetector):
         outs = self.bbox_head(x)
         return outs
 
+    # todo:这里需要改动，为了和数据集输出对应上
     def forward_train(self,
                       img,
                       img_metas,
                       gt_bboxes,
                       gt_labels,
+                      # 增加三个参数,暂时不加实现
+                      ref_img,  # images of reference frame
+                      ref_bboxes,  # gt bbox of reference frame
+                      gt_pids,  # gt ids of current frame bbox mapped to reference frame
                       gt_bboxes_ignore=None):
         x = self.extract_feat(img)
         outs = self.bbox_head(x)
