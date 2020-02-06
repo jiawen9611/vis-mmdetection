@@ -504,6 +504,9 @@ class ResNet(nn.Module):
             x = res_layer(x)
             if i in self.out_indices:
                 outs.append(x)
+        # forward中outs取的是多stage的输出，先拼成一个list在转成tuple，
+        # 取哪些stage是根据config中的out_indices
+        # todo: 每个list的特征图大小匹配吗
         return tuple(outs)
 
     def train(self, mode=True):

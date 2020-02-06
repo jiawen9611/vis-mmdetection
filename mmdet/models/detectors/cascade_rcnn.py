@@ -11,7 +11,9 @@ from ..registry import DETECTORS
 from .base import BaseDetector
 from .test_mixins import RPNTestMixin
 
+# CascadeRCNN的组建代码
 
+# 这一行代码，将CascadeRCNN注册到了DETECTORS中
 @DETECTORS.register_module
 class CascadeRCNN(BaseDetector, RPNTestMixin):
 

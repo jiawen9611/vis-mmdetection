@@ -39,6 +39,7 @@ class Registry(object):
         if not force and module_name in self._module_dict:
             raise KeyError('{} is already registered in {}'.format(
                 module_name, self.name))
+        # 注册的模型被保存到了，self._module_dict中
         self._module_dict[module_name] = module_class
 
     def register_module(self, cls=None, force=False):
@@ -47,7 +48,7 @@ class Registry(object):
         self._register_module(cls, force=force)
         return cls
 
-
+# registry.module_dict中实例化注册过的模型
 def build_from_cfg(cfg, registry, default_args=None):
     """Build a module from config dict.
 

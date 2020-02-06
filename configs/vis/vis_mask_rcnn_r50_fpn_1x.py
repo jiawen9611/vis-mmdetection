@@ -6,11 +6,13 @@ model = dict(
         type='ResNet',
         depth=50,
         num_stages=4,
+        # backbone是4stage,取了所有的stage。
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
         style='pytorch'),
     neck=dict(
         type='FPN',
+        # in_channels与之前backbone的输出相匹配
         in_channels=[256, 512, 1024, 2048],
         out_channels=256,
         num_outs=5),
