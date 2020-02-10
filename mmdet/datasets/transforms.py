@@ -2,7 +2,8 @@ import mmcv
 import numpy as np
 import torch
 
-__all__ = ['ImageTransform', 'BboxTransform', 'MaskTransform', 'Numpy2Tensor']
+__all__ = ['ImageTransform', 'BboxTransform', 'MaskTransform', 'SegMapTransform',
+           'Numpy2Tensor']
 
 
 class ImageTransform(object):
@@ -45,6 +46,81 @@ class ImageTransform(object):
         img = img.transpose(2, 0, 1)
         return img, img_shape, pad_shape, scale_factor
 
+# polarmask
+class HeatmapTransform(object):
+    """Preprocess an heatmap.
+
+    1. rescale the heatmap to expected size
+    3. flip the image (if needed)
+    4. pad the image (if needed)
+    """
+
+    def __init__(self,
+                 mean=(0, 0, 0),
+                 std=(1, 1, 1),
+                 to_rgb=True,
+                 size_divisor=None):
+        self.mean = np.array(mean, dtype=np.float32)
+        self.std = np.array(std, dtype=np.float32)
+        self.to_rgb = to_rgb
+        self.size_divisor = size_divisor
+
+    def __call__(self, img, scale, flip=False, keep_ratio=True):
+        if keep_ratio:
+            img, scale_factor = mmcv.imrescale(img, scale, return_scale=True, interpolation='nearest')
+        else:
+            img, w_scale, h_scale = mmcv.imresize(
+                img, scale, return_scale=True)
+            scale_factor = np.array([w_scale, h_scale, w_scale, h_scale],
+                                    dtype=np.float32)
+        img_shape = img.shape
+        if flip:
+            img = mmcv.imflip(img)
+        if self.size_divisor is not None:
+            img = mmcv.impad_to_multiple(img, self.size_divisor)
+            pad_shape = img.shape
+        else:
+            pad_shape = img_shape
+        img = img[np.newaxis,:,:]
+        return img
+
+# polarmask
+class SegmapTransform(object):
+    """Preprocess an heatmap.
+
+    1. rescale the heatmap to expected size
+    3. flip the image (if needed)
+    4. pad the image (if needed)
+    """
+
+    def __init__(self,
+                 mean=(0, 0, 0),
+                 std=(1, 1, 1),
+                 to_rgb=True,
+                 size_divisor=None):
+        self.mean = np.array(mean, dtype=np.float32)
+        self.std = np.array(std, dtype=np.float32)
+        self.to_rgb = to_rgb
+        self.size_divisor = size_divisor
+
+    def __call__(self, img, scale, flip=False, keep_ratio=True):
+        if keep_ratio:
+            img, scale_factor = mmcv.imrescale(img, scale, return_scale=True)
+        else:
+            img, w_scale, h_scale = mmcv.imresize(
+                img, scale, return_scale=True)
+            scale_factor = np.array([w_scale, h_scale, w_scale, h_scale],
+                                    dtype=np.float32)
+        img_shape = img.shape
+        if flip:
+            img = mmcv.imflip(img)
+        if self.size_divisor is not None:
+            img = mmcv.impad_to_multiple(img, self.size_divisor)
+            pad_shape = img.shape
+        else:
+            pad_shape = img_shape
+        # img = img[np.newaxis,:,:]
+        return img
 
 def bbox_flip(bboxes, img_shape):
     """Flip bboxes horizontally.
@@ -97,7 +173,11 @@ class MaskTransform(object):
 
     def __call__(self, masks, pad_shape, scale_factor, flip=False):
         masks = [
-            mmcv.imrescale(mask, scale_factor, interpolation='nearest')
+
+
+            # TODO:
+            mmcv.imrescale(mask, tuple(scale_factor), interpolation='nearest')
+            # mmcv.imrescale(mask, scale_factor, interpolation='nearest')
             for mask in masks
         ]
         if flip:
@@ -108,6 +188,28 @@ class MaskTransform(object):
         padded_masks = np.stack(padded_masks, axis=0)
         return padded_masks
 
+# polarmask
+class SegMapTransform(object):
+    """Preprocess semantic segmentation maps.
+
+    1. rescale the segmentation map to expected size
+    3. flip the image (if needed)
+    4. pad the image (if needed)
+    """
+
+    def __init__(self, size_divisor=None):
+        self.size_divisor = size_divisor
+
+    def __call__(self, img, scale, flip=False, keep_ratio=True):
+        if keep_ratio:
+            img = mmcv.imrescale(img, scale, interpolation='nearest')
+        else:
+            img = mmcv.imresize(img, scale, interpolation='nearest')
+        if flip:
+            img = mmcv.imflip(img)
+        if self.size_divisor is not None:
+            img = mmcv.impad_to_multiple(img, self.size_divisor)
+        return img
 
 class Numpy2Tensor(object):
 
@@ -119,3 +221,6 @@ class Numpy2Tensor(object):
             return torch.from_numpy(args[0])
         else:
             return tuple([torch.from_numpy(np.array(array)) for array in args])
+
+
+

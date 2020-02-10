@@ -15,6 +15,7 @@ from mmdet.datasets import build_dataset
 from mmdet.models import build_detector
 from mmdet.utils import get_root_logger
 
+# python tools/train.py configs/polarmask/polar_768_1x_r50.py
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
